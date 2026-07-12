@@ -1,0 +1,83 @@
+/* REELS STYLES */
+.reels-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #000;
+    z-index: 500;
+    display: none;
+}
+
+.reel-video-container {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+}
+
+.reel-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.reel-controls {
+    position: absolute;
+    bottom: 80px;
+    left: 15px;
+    right: 15px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.reel-user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.reel-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    border: 2px solid white;
+}
+
+.reel-username {
+    font-weight: 600;
+}
+
+.reel-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    align-items: center;
+}
+
+.reel-action {
+    text-align: center;
+    cursor: pointer;
+}
+
+.reel-action i {
+    font-size: 28px;
+    margin-bottom: 5px;
+}
+
+.reel-action span {
+    font-size: 14px;
+}
+
+.follow-btn.reel-follow {
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.dark-mode .reels-container {
+    background-color: #000;
+}
