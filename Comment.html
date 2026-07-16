@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iOS Style Comment Button</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .comment-button-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .comment-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background-color: rgba(0, 0, 0, 0.05);
+            transition: background-color 0.2s ease;
+        }
+        
+        .comment-button:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        .comment-button:active {
+            background-color: rgba(0, 0, 0, 0.15);
+        }
+        
+        .comment-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 6px;
+        }
+        
+        .comment-count {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .comment-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: flex-end;
+        }
+        
+        .comment-content {
+            background-color: white;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 16px 16px 0 0;
+            padding: 16px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .comment-content.active {
+            transform: translateY(0);
+        }
+        
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 16px;
+        }
+        
+        .comment-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #007AFF;
+            padding: 8px;
+        }
+        
+        .comment-input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            flex-shrink: 0;
+        }
+        
+        .comment-input {
+            flex-grow: 1;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 12px 16px;
+            font-size: 14px;
+            outline: none;
+            resize: none;
+            min-height: 40px;
+            max-height: 120px;
+        }
+        
+        .comment-input:focus {
+            border-color: #007AFF;
+        }
+        
+        .post-button {
+            background-color: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            align-self: flex-end;
+            opacity: 0.5;
+            transition: opacity 0.2s ease;
+        }
+        
+        .post-button.active {
+            opacity: 1;
+        }
+        
+        .comments-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+        
+        .comment-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        
+        .comment-text {
+            background-color: #f0f0f0;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .comment-author {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        @media (min-width: 768px) {
+            .comment-modal {
+                align-items: center;
+            }
+            
+            .comment-content {
+                border-radius: 16px;
+                max-height: 70vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="comment-button-container">
+            <button class="comment-button" id="commentButton">
+                <svg class="comment-icon" viewBox="0 0 24 24" fill="#666">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5-9h10v2H7z"/>
+                </svg>
+                <span class="comment-count" id="commentCount">24</span>
+            </button>
+        </div>
+    </div>
+    
+    <div class="comment-modal" id="commentModal">
+        <div class="comment-content" id="commentContent">
+            <div class="comment-header">
+                <h2 class="comment-title">Comments</h2>
+                <button class="close-button" id="closeButton">×</button>
+            </div>
+            
+            <div class="comment-input-container">
+                <div class="user-avatar"></div>
+                <textarea class="comment-input" id="commentInput" placeholder="Add a comment..."></textarea>
+            </div>
+            
+            <button class="post-button" id="postButton" disabled>Post</button>
+            
+            <div class="comments-list" id="commentsList">
+                <!-- Sample comments -->
+                <div class="comment-item">
+                    <div class="user-avatar"></div>
+                    <div>
+                        <div class="comment-author">John Doe</div>
+                        <div class="comment-text">This is a great video! Really enjoyed the content.</div>
+                    </div>
+                </div>
+                <div class="comment-item">
+                    <div class="user-avatar"></div>
+                    <div>
+                        <div class="comment-author">Jane Smith</div>
+                        <div class="comment-text">Can you make more tutorials like this? Very helpful!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const commentButton = document.getElementById('commentButton');
+            const commentModal = document.getElementById('commentModal');
+            const commentContent = document.getElementById('commentContent');
+            const closeButton = document.getElementById('closeButton');
+            const commentInput = document.getElementById('commentInput');
+            const postButton = document.getElementById('postButton');
+            const commentsList = document.getElementById('commentsList');
+            const commentCount = document.getElementById('commentCount');
+            
+            let comments = [
+                { author: "John Doe", text: "This is a great video! Really enjoyed the content." },
+                { author: "Jane Smith", text: "Can you make more tutorials like this? Very helpful!" }
+            ];
+            
+            // Open modal
+            commentButton.addEventListener('click', function() {
+                commentModal.style.display = 'flex';
+                setTimeout(() => {
+                    commentContent.classList.add('active');
+                }, 10);
+            });
+            
+            // Close modal
+            function closeModal() {
+                commentContent.classList.remove('active');
+                setTimeout(() => {
+                    commentModal.style.display = 'none';
+                }, 300);
+            }
+            
+            closeButton.addEventListener('click', closeModal);
+            commentModal.addEventListener('click', function(e) {
+                if (e.target === commentModal) {
+                    closeModal();
+                }
+            });
+            
+            // Handle comment input
+            commentInput.addEventListener('input', function() {
+                if (commentInput.value.trim() !== '') {
+                    postButton.disabled = false;
+                    postButton.classList.add('active');
+                } else {
+                    postButton.disabled = true;
+                    postButton.classList.remove('active');
+                }
+            });
+            
+            // Post comment
+            postButton.addEventListener('click', function() {
+                const commentText = commentInput.value.trim();
+                if (commentText) {
+                    // Add new comment
+                    const newComment = {
+                        author: "You",
+                        text: commentText
+                    };
+                    comments.unshift(newComment);
+                    
+                    // Update UI
+                    renderComments();
+                    updateCommentCount();
+                    
+                    // Clear input
+                    commentInput.value = '';
+                    postButton.disabled = true;
+                    postButton.classList.remove('active');
+                }
+            });
+            
+            // Render comments
+            function renderComments() {
+                commentsList.innerHTML = '';
+                comments.forEach(comment => {
+                    const commentItem = document.createElement('div');
+                    commentItem.className = 'comment-item';
+                    
+                    commentItem.innerHTML = `
+                        <div class="user-avatar"></div>
+                        <div>
+                            <div class="comment-author">${comment.author}</div>
+                            <div class="comment-text">${comment.text}</div>
+                        </div>
+                    `;
+                    
+                    commentsList.appendChild(commentItem);
+                });
+            }
+            
+            // Update comment count
+            function updateCommentCount() {
+                commentCount.textContent = comments.length;
+            }
+            
+            // Initialize
+            renderComments();
+            updateCommentCount();
+        });
+    </script>
+</body>
+</html>
